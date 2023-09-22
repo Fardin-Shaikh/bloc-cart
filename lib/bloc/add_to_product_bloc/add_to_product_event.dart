@@ -1,21 +1,21 @@
 import 'package:ecommerce_app_bloc/Models/product.dart';
 import 'package:equatable/equatable.dart';
 
-abstract class ProductEvent extends Equatable {
+abstract class PrdEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
 
-class AddToProduct extends ProductEvent {
+class AddToPrd extends PrdEvent {
   final Product product;
-  AddToProduct(this.product);
+  AddToPrd(this.product);
   @override
   List<Object> get props => [product];
 }
 
-class RemoveFromProduct extends ProductEvent {
+class RemoveFromPrd extends PrdEvent {
   final Product product;
-  RemoveFromProduct(this.product);
+  RemoveFromPrd(this.product);
   @override
   List<Object> get props => [product];
 }
