@@ -2,6 +2,7 @@ import 'package:ecommerce_app_bloc/Models/product.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_cart_bloc/add_to_cart_bloc.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_cart_bloc/add_to_cart_event.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_cart_bloc/add_to_cart_state.dart';
+import 'package:ecommerce_app_bloc/screeens/add_product_screen.dart';
 import 'package:ecommerce_app_bloc/screeens/cart_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,8 +27,13 @@ class _ProductlistsLreeSState extends State<ProductListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product List'),
-        centerTitle: true,
         actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => AddProduct()));
+              },
+              icon: const Icon(Icons.add)),
           BlocBuilder<CartBloc, CartState>(builder: (context, state) {
             int count = state.cartItems.length;
             return Stack(
@@ -73,7 +79,7 @@ class _ProductlistsLreeSState extends State<ProductListScreen> {
               subtitle: Text('\$${product.price}'),
               trailing: IconButton(
                   onPressed: () {
-                    final cartBloc = context.read<CartBloc>();
+                    final cartBloc = BlocProvider.of<CartBloc>(context);
                     final cartItems = cartBloc.state.cartItems;
                     if (cartItems.any((item) => item.id == product.id)) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
