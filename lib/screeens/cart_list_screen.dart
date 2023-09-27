@@ -14,29 +14,38 @@ class CartScreen extends StatelessWidget {
         title: const Text('My Cart '),
         centerTitle: true,
       ),
-      body: BlocBuilder<CartBloc, CartState>(builder: (context, state) {
-        if (state.cartItems.isEmpty) {
-          return const Center(
-            child: Text("No Item in the Cart"),
-          );
-        } else {
-          return ListView.builder(
-              itemCount: state.cartItems.length,
-              itemBuilder: (context, index) {
-                final product = state.cartItems[index];
-                return ListTile(
-                  title: Text(product.name),
-                  subtitle: Text(product.price.toString()),
-                  trailing: IconButton(
-                      onPressed: () {
-                        final cartBloc = BlocProvider.of<CartBloc>(context);
-                        cartBloc.add(RemoveFromCart(product));
-                      },
-                      icon: const Icon(Icons.remove_shopping_cart_outlined)),
-                );
-              });
-        }
-      }),
+      body: BlocBuilder<CartBloc, CartState>(
+          bloc: BlocProvider.of<CartBloc>(context)..add(CartFetch()),
+          builder: (context, state) {
+            if (state.cartItems.isEmpty) {
+              return const Center(
+                child: Text("No Item in the Cart"),
+              );
+            } else {
+              return ListView.builder(
+                  itemCount: state.cartItems.length,
+                  itemBuilder: (context, index) {
+                    final product = state.cartItems[index];
+                    final firstLetter = product.name[0].toUpperCase();
+                    final lastLetter =
+                        product.name[product.name.length - 1].toUpperCase();
+                    return ListTile(
+                      title: Text(product.name),
+                      subtitle: Text(product.price.toString()),
+                      leading: CircleAvatar(
+                        child: Text(firstLetter + lastLetter),
+                      ),
+                      trailing: IconButton(
+                          onPressed: () {
+                            final cartBloc = BlocProvider.of<CartBloc>(context);
+                            cartBloc.add(RemoveFromCart(product));
+                          },
+                          icon:
+                              const Icon(Icons.remove_shopping_cart_outlined)),
+                    );
+                  });
+            }
+          }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.pop(context);

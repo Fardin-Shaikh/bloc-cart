@@ -6,6 +6,12 @@ abstract class PrdEvent extends Equatable {
   List<Object> get props => [];
 }
 
+// class FeatchPrd extends PrdEvent {
+
+//   FeatchPrd();
+//   @override
+//   List<Object> get props => [];
+// }
 class AddToPrd extends PrdEvent {
   final Product product;
   AddToPrd(this.product);
@@ -13,9 +19,22 @@ class AddToPrd extends PrdEvent {
   List<Object> get props => [product];
 }
 
+class Fetch extends PrdEvent {
+  Fetch();
+  @override
+  List<Object> get props => [];
+}
+
 class RemoveFromPrd extends PrdEvent {
   final Product product;
   RemoveFromPrd(this.product);
+  @override
+  List<Object> get props => [product];
+}
+
+class UpdatePrd extends PrdEvent {
+  final Product product;
+  UpdatePrd(this.product);
   @override
   List<Object> get props => [product];
 }

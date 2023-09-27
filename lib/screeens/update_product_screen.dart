@@ -1,40 +1,36 @@
-// import 'package:ecommerce_app_bloc/Models/product.dart';
-import 'dart:developer';
-
 import 'package:ecommerce_app_bloc/Models/product.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_bloc.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_event.dart';
-import 'package:ecommerce_app_bloc/db/db_code.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AddProduct extends StatelessWidget {
-  // const AddProduct({Key? key}) : super(key: key);
-  // final Function callBackcall;
+class UpdateProduct extends StatefulWidget {
+  final Product prd;
+  const UpdateProduct({super.key, required this.prd});
 
-  const AddProduct({
-    super.key,
-  });
   @override
-  Widget build(BuildContext context) {
-    return _AddProductForm();
-  }
+  State<UpdateProduct> createState() => _UpdateProductState();
 }
 
-class _AddProductForm extends StatelessWidget {
-  // final Function callBack;
+class _UpdateProductState extends State<UpdateProduct> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController idController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
 
-  _AddProductForm();
+  @override
+  void initState() {
+    idController.text = "${widget.prd.id}";
+    nameController.text = widget.prd.name;
+    priceController.text = "${widget.prd.price}";
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Product'),
+        title: const Text('Update Product'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -44,6 +40,7 @@ class _AddProductForm extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextFormField(
+                readOnly: true,
                 controller: idController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(labelText: 'ID'),
@@ -89,47 +86,28 @@ class _AddProductForm extends StatelessWidget {
                       name: name,
                       price: price,
                     );
-                    final existingProduct =
-                        await ProductDatabase.instance.getProductById(id);
-                    log(existingProduct.toString());
-                    if (existingProduct != null) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text(
-                            'Product already exists, try using another ID'),
-                        duration: Duration(seconds: 1),
-                      ));
-                    } else {
-                      final productBloc = BlocProvider.of<PrdBloc>(context);
 
-                      productBloc.add(AddToPrd(product));
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Product Added Successfully'),
-                        duration: Duration(seconds: 1),
-                      ));
-                      log("here fetch");
-                      Navigator.pop(context);
-                    }
+                    final productBloc = context.read<PrdBloc>();
+                    // final productList = productBloc.state.productItems;
+
+                    productBloc.add(UpdatePrd(product));
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Product Added Successfully'),
+                      duration: Duration(seconds: 1),
+                    ));
+                    Navigator.pop(context);
 
                     idController.clear();
                     nameController.clear();
                     priceController.clear();
                   }
                 },
-                child: const Text('Add'),
+                child: const Text('Update'),
               ),
             ],
           ),
         ),
       ),
     );
-  }
-}
-
-class MyWidget extends StatelessWidget {
-  const MyWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }

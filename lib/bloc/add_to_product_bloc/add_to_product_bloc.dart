@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:ecommerce_app_bloc/Models/product.dart';
 
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_event.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_state.dart';
+import 'package:ecommerce_app_bloc/db/db_code.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PrdBloc extends Bloc<PrdEvent, PrdState> {
@@ -10,30 +14,31 @@ class PrdBloc extends Bloc<PrdEvent, PrdState> {
   }
   Future<void> _mapEventToState(PrdEvent event, Emitter<PrdState> emit) async {
     if (event is AddToPrd) {
-      final updatedPrd = List<Product>.from(state.productItems)
-        ..add(event.product);
+      // final updatedPrd = List<Product>.from(state.productItems)
+      //   ..add(event.product);
+      // emit(PrdState(updatedPrd));
+      await ProductDatabase.instance.createProduct(event.product);
+      final updatedPrd = await ProductDatabase.instance.getAllProducts();
+
       emit(PrdState(updatedPrd));
       //apply break point to check the check which item added in the Prd
     } else if (event is RemoveFromPrd) {
-      final updaetPrd = List<Product>.from(state.productItems)
-        ..remove(event.product);
+      // final updaetPrd = List<Product>.from(state.productItems)
+      //   ..remove(event.product);
+
+      await ProductDatabase.instance.deleteProduct(event.product.id);
+      final updaetPrd = await ProductDatabase.instance.getAllProducts();
       emit(PrdState(updaetPrd));
-      
-      
+    } else if (event is Fetch) {
+
+      final fin = await ProductDatabase.instance.getAllProducts();
+      log('${fin.length}');
+      emit(PrdState(fin));
+    } else if (event is UpdatePrd) {
+      await ProductDatabase.instance.updateProduct(event.product);
+      final fin = await ProductDatabase.instance.getAllProducts();
+
+      emit(PrdState(fin));
     }
   }
-  //   final List<Product> productList = [
-  //   Product(id: 1, name: 'product1', price: 10),
-  //   Product(id: 2, name: 'product2', price: 20),
-  //   Product(id: 3, name: 'product3', price: 30),
-  //   Product(id: 4, name: 'product4', price: 40),
-  //   Product(id: 5, name: 'product5', price: 50),
-  // ];
 }
-
-
-
-
-
-
-

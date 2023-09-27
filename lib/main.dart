@@ -3,8 +3,19 @@ import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_bloc.
 import 'package:ecommerce_app_bloc/screeens/product_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-void main() => runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  var status = await Permission.storage.request();
+
+  if (status.isGranted) {
+    runApp(const MyApp());
+  } else {
+    print('Storage permission denied.');
+  }
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
