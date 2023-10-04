@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:ecommerce_app_bloc/bloc/add_to_cart_bloc/add_to_cart_bloc.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_bloc.dart';
 import 'package:ecommerce_app_bloc/screeens/product_list.dart';
@@ -13,7 +15,7 @@ Future<void> main() async {
   if (status.isGranted) {
     runApp(const MyApp());
   } else {
-    print('Storage permission denied.');
+    log('Storage permission denied.');
   }
 }
 

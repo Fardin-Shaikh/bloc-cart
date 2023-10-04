@@ -1,7 +1,5 @@
 import 'dart:developer';
 
-import 'package:ecommerce_app_bloc/Models/product.dart';
-
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_event.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_state.dart';
 import 'package:ecommerce_app_bloc/db/db_code.dart';
@@ -13,30 +11,27 @@ class PrdBloc extends Bloc<PrdEvent, PrdState> {
     on<PrdEvent>(_mapEventToState);
   }
   Future<void> _mapEventToState(PrdEvent event, Emitter<PrdState> emit) async {
+    final inst = ProductDatabase();
     if (event is AddToPrd) {
-      // final updatedPrd = List<Product>.from(state.productItems)
-      //   ..add(event.product);
-      // emit(PrdState(updatedPrd));
-      await ProductDatabase.instance.createProduct(event.product);
-      final updatedPrd = await ProductDatabase.instance.getAllProducts();
+      await inst.createProduct(event.product);
+      // final updatedPrd = await ProductDatabase().getAllProducts();
+      final updatedPrd = await inst.getAllProducts( );
 
       emit(PrdState(updatedPrd));
-      //apply break point to check the check which item added in the Prd
     } else if (event is RemoveFromPrd) {
       // final updaetPrd = List<Product>.from(state.productItems)
       //   ..remove(event.product);
 
-      await ProductDatabase.instance.deleteProduct(event.product.id);
-      final updaetPrd = await ProductDatabase.instance.getAllProducts();
+      await inst.deleteProduct(event.product.id,  );
+      final updaetPrd = await inst.getAllProducts( );
       emit(PrdState(updaetPrd));
     } else if (event is Fetch) {
-
-      final fin = await ProductDatabase.instance.getAllProducts();
+      final fin = await inst.getAllProducts( );
       log('${fin.length}');
       emit(PrdState(fin));
     } else if (event is UpdatePrd) {
-      await ProductDatabase.instance.updateProduct(event.product);
-      final fin = await ProductDatabase.instance.getAllProducts();
+      await inst.updateProduct(event.product,  );
+      final fin = await inst.getAllProducts( );
 
       emit(PrdState(fin));
     }

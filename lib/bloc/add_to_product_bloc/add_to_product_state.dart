@@ -1,5 +1,4 @@
 import 'package:ecommerce_app_bloc/Models/product.dart';
-import 'package:equatable/equatable.dart';
 
 // abstract class AllStates extends Equatable {
 //   @override

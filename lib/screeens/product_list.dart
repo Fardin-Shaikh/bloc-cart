@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:ecommerce_app_bloc/Models/product.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_cart_bloc/add_to_cart_bloc.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_cart_bloc/add_to_cart_event.dart';
@@ -5,7 +7,7 @@ import 'package:ecommerce_app_bloc/bloc/add_to_cart_bloc/add_to_cart_state.dart'
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_bloc.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_event.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_state.dart';
-import 'package:ecommerce_app_bloc/screeens/add_product_screen.dart';
+import 'package:ecommerce_app_bloc/db/db_code.dart';
 import 'package:ecommerce_app_bloc/screeens/cart_list_screen.dart';
 import 'package:ecommerce_app_bloc/screeens/update_product_screen.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +25,8 @@ class ProductListScreen extends StatelessWidget {
             IconButton(
                 onPressed: () {
                   Navigator.of(context)
-                      .push(
-                          MaterialPageRoute(builder: (_) => const AddProduct()))
+                      .push(MaterialPageRoute(
+                          builder: (_) => const AddUpdateProduct()))
                       .whenComplete(
                           () => BlocProvider.of<PrdBloc>(context).add(Fetch()));
                   // .then((value) => PrdBloc()..add(Fetch()));
@@ -71,35 +73,34 @@ class ProductListScreen extends StatelessWidget {
         body: BlocBuilder<PrdBloc, PrdState>(
           bloc: BlocProvider.of<PrdBloc>(context)..add(Fetch()),
           builder: (context, state) {
-            List<Product> products = state.productItems;
-            products.sort((a, b) => a.name.compareTo(b.name));
-            return listViewSWap(products);
-          },
-        ));
-  }
+            List<Product> lis = state.productItems
+              ..sort((a, b) => a.position.compareTo(b.position));
 
-  Widget listView(List<Product> lis) {
-    if (lis.isEmpty) {
-      return const Center(
-        child: Text(" No product ! Add new product "),
-      );
-    } else {
-      return ListView.builder(
-          itemCount: lis.length,
-          itemBuilder: (context, index) {
-            final product = lis[index];
-
-            return ListTile(
-              title: Text(product.name),
-              subtitle: Text('\$${product.price}'),
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => UpdateProduct(
-                          prd: product,
-                        )));
+            // products.sort((a, b) => a.name.compareTo(b.name));
+            return ReorderableListView(
+              onReorder: (oldIndex, newIndex) async {
+                // Update the position of the dragged product in the list
+                final productToMove = lis[oldIndex];
+                final newPosition =
+                    newIndex < oldIndex ? newIndex : newIndex - 1;
+                lis.removeAt(oldIndex);
+                lis.insert(newPosition, productToMove);
+                log("in reordering ");
+                // Update the positions of all products in the list
+                for (int i = 0; i < lis.length; i++) {
+                  lis[i].position = i;
+                  await ProductDatabase().updateProductPosition(lis[i].id, i);
+                }
+                BlocProvider.of<PrdBloc>(context).add(Fetch());
               },
-              leading: IconButton(
-                  onPressed: () {
+              children: lis.map((product) {
+                final firstLetter = product.name[0].toUpperCase();
+                final lastLetter =
+                    product.name[product.name.length - 1].toUpperCase();
+                return Dismissible(
+                  key: Key(product.id.toString()),
+                  direction: DismissDirection.horizontal,
+                  onDismissed: (direction) {
                     final prdbloc = BlocProvider.of<PrdBloc>(context);
                     prdbloc
                         .add(RemoveFromPrd(product)); //to find the product bloc
@@ -107,36 +108,101 @@ class ProductListScreen extends StatelessWidget {
                     final cartBloc = BlocProvider.of<CartBloc>(context);
                     cartBloc.add(RemoveFromCart(product));
                     //this is used to remove the product form the cart if the product is present in the cart
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Product Removed Sucessfully!'),
-                      duration: Duration(seconds: 1),
-                    ));
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Product ${product.name} deleted'),
+                      ),
+                    );
                   },
-                  icon: const Icon(Icons.clear)),
-              trailing: IconButton(
-                  onPressed: () {
-                    final cartBloc = BlocProvider.of<CartBloc>(context);
-                    final cartItems = cartBloc.state.cartItems;
-                    if (cartItems.any((item) => item.id == product.id)) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Product already added to Cart'),
-                        duration: Duration(seconds: 1),
-                      ));
-                    } else {
-                      cartBloc.add(AddToCart(product));
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Product added to Cart'),
-                        duration: Duration(seconds: 1),
-                      ));
-                    }
-                  },
-                  icon: const Icon(Icons.add_shopping_cart_outlined)),
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerLeft,
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                  ),
+                  child: ListTile(
+                    title: Text(product.name),
+                    subtitle: Text('\$${product.price}'),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => AddUpdateProduct(
+                                prd: product,
+                              )));
+                    },
+                    leading: CircleAvatar(
+                      child: Text(firstLetter + lastLetter),
+                    ),
+                    trailing: IconButton(
+                        onPressed: () {
+                          final cartBloc = BlocProvider.of<CartBloc>(context);
+                          final cartItems = cartBloc.state.cartItems;
+                          if (cartItems.any((item) => item.id == product.id)) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('Product already added to Cart'),
+                              duration: Duration(seconds: 1),
+                            ));
+                          } else {
+                            cartBloc.add(AddToCart(product));
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('Product added to Cart'),
+                              duration: Duration(seconds: 1),
+                            ));
+                          }
+                        },
+                        icon: const Icon(Icons.add_shopping_cart_outlined)),
+                  ),
+                );
+
+                // ListTile(
+                //   key: Key(product.id.toString()),
+                //   title: Text(product.name),
+                //   subtitle: Text('\$${product.price}'),
+                //   onTap: () {
+                //     Navigator.of(context).push(MaterialPageRoute(
+                //       builder: (_) => AddUpdateProduct(
+                //         prd: product,
+                //       ),
+                //     ));
+                //   },
+                //   leading: CircleAvatar(
+                //     child: Text(firstLetter + lastLetter),
+                //   ),
+                //   trailing: IconButton(
+                //     onPressed: () {
+                //       final cartBloc = BlocProvider.of<CartBloc>(context);
+                //       final cartItems = cartBloc.state.cartItems;
+                //       if (cartItems.any((item) => item.id == product.id)) {
+                //         ScaffoldMessenger.of(context)
+                //             .showSnackBar(const SnackBar(
+                //           content: Text('Product already added to Cart'),
+                //           duration: Duration(seconds: 1),
+                //         ));
+                //       } else {
+                //         cartBloc.add(AddToCart(product));
+                //         ScaffoldMessenger.of(context)
+                //             .showSnackBar(const SnackBar(
+                //           content: Text('Product added to Cart'),
+                //           duration: Duration(seconds: 1),
+                //         ));
+                //       }
+                //     },
+                //     icon: const Icon(Icons.add_shopping_cart_outlined),
+                //   ),
+                // );
+              }).toList(),
             );
-          });
-    }
+          },
+        ));
   }
 
   Widget listViewSWap(List<Product> lis) {
+    //  List<Product> products = state.productItems;
+    //       products.sort((a, b) => a.name.compareTo(b.name));
     if (lis.isEmpty) {
       return const Center(
         child: Text(" No product ! Add new product "),
@@ -179,7 +245,7 @@ class ProductListScreen extends StatelessWidget {
                 subtitle: Text('\$${product.price}'),
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => UpdateProduct(
+                      builder: (_) => AddUpdateProduct(
                             prd: product,
                           )));
                 },
