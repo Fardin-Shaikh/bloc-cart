@@ -70,14 +70,151 @@ class ProductListScreen extends StatelessWidget {
                 }),
           ],
         ),
-        body: BlocBuilder<PrdBloc, PrdState>(
+        body:
+            //BLOC COSUMNER CODE
+            //     BlocConsumer<PrdBloc, PrdState>(
+            //   listener: (context, state) {
+            //     BlocProvider.of<PrdBloc>(context).add(Fetch());
+            //     // state.maybeWhen(
+            //     //     onTap: (count, color) {
+            //     //       counter = count;
+            //     //       count_list.add({'count': count, 'color': color});
+            //     //       // generate == false ? :
+            //     //     },
+            //     //     orElse: () {});
+            //   },
+            //   builder: (context, state) {
+            //     List<Product> lis = state.productItems
+            //       ..sort((a, b) => a.position.compareTo(b.position));
+            //     // List<Widget> test = (state.productItems
+            //     //   ..sort((a, b) => a.position.compareTo(b.position))
+            //     //   ..map((e) {
+            //     //     return Container();
+            //     //   }).toList()).cast<Widget>();
+            //     // products.sort((a, b) => a.name.compareTo(b.name));
+            //     return ReorderableListView(
+            //       onReorder: (oldIndex, newIndex) async {
+            //         // Update the position of the dragged product in the list
+            //         final productToMove = lis[oldIndex];
+            //         final newPosition =
+            //             newIndex < oldIndex ? newIndex : newIndex - 1;
+            //         lis.removeAt(oldIndex);
+            //         lis.insert(newPosition, productToMove);
+            //         log("in reordering ");
+            //         // Update the positions of all products in the list
+            //         for (int i = 0; i < lis.length; i++) {
+            //           lis[i].position = i;
+            //           await ProductDatabase().updateProductPosition(lis[i].id, i);
+            //         }
+            //         // BlocProvider.of<PrdBloc>(context).add(Fetch());
+            //       },
+            //       children: (lis.map((product) {
+            //         final firstLetter = product.name[0].toUpperCase();
+            //         final lastLetter =
+            //             product.name[product.name.length - 1].toUpperCase();
+            //         return Dismissible(
+            //           key: Key(product.id.toString()),
+            //           direction: DismissDirection.horizontal,
+            //           onDismissed: (direction) {
+            //             final prdbloc = BlocProvider.of<PrdBloc>(context);
+            //             prdbloc
+            //                 .add(RemoveFromPrd(product)); //to find the product bloc
+            //             final cartBloc = BlocProvider.of<CartBloc>(context);
+            //             cartBloc.add(RemoveFromCart(product));
+            //             //this is used to remove the product form the cart if the product is present in the cart
+            //             ScaffoldMessenger.of(context).showSnackBar(
+            //               SnackBar(
+            //                 content: Text('Product ${product.name} deleted'),
+            //               ),
+            //             );
+            //           },
+            //           background: Container(
+            //             color: Colors.red,
+            //             alignment: Alignment.centerLeft,
+            //             child: const Icon(
+            //               Icons.delete,
+            //               color: Colors.white,
+            //             ),
+            //           ),
+            //           child: ListTile(
+            //             key: ValueKey(product.id),
+            //             title: Text(product.name),
+            //             subtitle: Text('\$${product.price}'),
+            //             onTap: () {
+            //               Navigator.of(context).push(MaterialPageRoute(
+            //                   builder: (_) => AddUpdateProduct(
+            //                         prd: product,
+            //                       )));
+            //             },
+            //             leading: CircleAvatar(
+            //               child: Text(firstLetter + lastLetter),
+            //             ),
+            //             trailing: IconButton(
+            //                 onPressed: () {
+            //                   final cartBloc = BlocProvider.of<CartBloc>(context);
+            //                   final cartItems = cartBloc.state.cartItems;
+            //                   if (cartItems.any((item) => item.id == product.id)) {
+            //                     ScaffoldMessenger.of(context)
+            //                         .showSnackBar(const SnackBar(
+            //                       content: Text('Product already added to Cart'),
+            //                       duration: Duration(seconds: 1),
+            //                     ));
+            //                   } else {
+            //                     cartBloc.add(AddToCart(product));
+            //                     ScaffoldMessenger.of(context)
+            //                         .showSnackBar(const SnackBar(
+            //                       content: Text('Product added to Cart'),
+            //                       duration: Duration(seconds: 1),
+            //                     ));
+            //                   }
+            //                 },
+            //                 icon: const Icon(Icons.add_shopping_cart_outlined)),
+            //           ),
+            //         );
+            //       }).toList()),
+            //     );
+            //   },
+            // ));
+            BlocBuilder<PrdBloc, PrdState>(
           bloc: BlocProvider.of<PrdBloc>(context)..add(Fetch()),
+          // buildWhen: (previous, current) {
+          //   // The bloc will only rebuild if the number of items or the value contents change.
+          //   // Changes to the order of the items doesn't trigger a rebuild.
+          //   final sortedPreviousItems = [...previous.productItems]
+          //     ..sort((a, b) => a.id.compareTo(b.id));
+          //   final sortedCurrentItems = [...current.productItems]
+          //     ..sort((a, b) => a.id.compareTo(b.id));
+          //   if (!listEquals(sortedPreviousItems, sortedCurrentItems)) {
+          //     log("true value");
+          //     BlocProvider.of<PrdBloc>(context).add(Fetch());
+          //     return true;
+          //   }
+          //   log("fasle value");
+          //   return false;
+          // },
           builder: (context, state) {
             List<Product> lis = state.productItems
               ..sort((a, b) => a.position.compareTo(b.position));
-
+            // List<Product> lis = state.productItems
+            //   ..sort((a, b) {
+            //     if (a.position == null && b.position == null) {
+            //       return 0;
+            //     }
+            //     return a.position!.compareTo(b.position as num);
+            //   });
+            // ..sort((a, b) => a.position!.compareTo(b.position as num));
+            // List<Widget> test = state.productItems
+            //   ..map((e) {
+            //     return Container();
+            //   })
+            //   ..sort((a, b) => a.position.compareTo(b.position));
             // products.sort((a, b) => a.name.compareTo(b.name));
-            return ReorderableListView(
+            if (lis.isEmpty) {
+              return const Center(
+                child: Text(" No product ! Add new product "),
+              );
+            }
+            return ReorderableListView.builder(
               onReorder: (oldIndex, newIndex) async {
                 // Update the position of the dragged product in the list
                 final productToMove = lis[oldIndex];
@@ -91,9 +228,12 @@ class ProductListScreen extends StatelessWidget {
                   lis[i].position = i;
                   await ProductDatabase().updateProductPosition(lis[i].id, i);
                 }
-                BlocProvider.of<PrdBloc>(context).add(Fetch());
+
+                // BlocProvider.of<PrdBloc>(context).add(Fetch());
               },
-              children: lis.map((product) {
+              itemCount: lis.length,
+              itemBuilder: (BuildContext context, int index) {
+                final product = lis[index];
                 final firstLetter = product.name[0].toUpperCase();
                 final lastLetter =
                     product.name[product.name.length - 1].toUpperCase();
@@ -124,6 +264,7 @@ class ProductListScreen extends StatelessWidget {
                     ),
                   ),
                   child: ListTile(
+                    key: ValueKey(product.id),
                     title: Text(product.name),
                     subtitle: Text('\$${product.price}'),
                     onTap: () {
@@ -157,45 +298,9 @@ class ProductListScreen extends StatelessWidget {
                         icon: const Icon(Icons.add_shopping_cart_outlined)),
                   ),
                 );
-
-                // ListTile(
-                //   key: Key(product.id.toString()),
-                //   title: Text(product.name),
-                //   subtitle: Text('\$${product.price}'),
-                //   onTap: () {
-                //     Navigator.of(context).push(MaterialPageRoute(
-                //       builder: (_) => AddUpdateProduct(
-                //         prd: product,
-                //       ),
-                //     ));
-                //   },
-                //   leading: CircleAvatar(
-                //     child: Text(firstLetter + lastLetter),
-                //   ),
-                //   trailing: IconButton(
-                //     onPressed: () {
-                //       final cartBloc = BlocProvider.of<CartBloc>(context);
-                //       final cartItems = cartBloc.state.cartItems;
-                //       if (cartItems.any((item) => item.id == product.id)) {
-                //         ScaffoldMessenger.of(context)
-                //             .showSnackBar(const SnackBar(
-                //           content: Text('Product already added to Cart'),
-                //           duration: Duration(seconds: 1),
-                //         ));
-                //       } else {
-                //         cartBloc.add(AddToCart(product));
-                //         ScaffoldMessenger.of(context)
-                //             .showSnackBar(const SnackBar(
-                //           content: Text('Product added to Cart'),
-                //           duration: Duration(seconds: 1),
-                //         ));
-                //       }
-                //     },
-                //     icon: const Icon(Icons.add_shopping_cart_outlined),
-                //   ),
-                // );
-              }).toList(),
+              },
             );
+            //!!!ALWAYS REMEMBER WHEN THERE IS UI RELATETD STATE UPDAET FROM A LIBARRY(HERE IS REORDERABLE LIST ) IT HSOULD BE IN A BUILDER
           },
         ));
   }
@@ -241,6 +346,7 @@ class ProductListScreen extends StatelessWidget {
                 ),
               ),
               child: ListTile(
+                key: ValueKey(product.id),
                 title: Text(product.name),
                 subtitle: Text('\$${product.price}'),
                 onTap: () {

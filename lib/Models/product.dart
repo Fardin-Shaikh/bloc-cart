@@ -39,7 +39,7 @@ class Product {
       {required this.id,
       required this.name,
       required this.price,
-      this.position =0,
+      this.position = 0,
       this.quantity = 0});
 
   Map<String, dynamic> toMap() {
@@ -51,6 +51,21 @@ class Product {
       'position': position,
     };
   }
+
+  // Map<String, dynamic> toMap() {
+  //   final map = {
+  //     'id': id,
+  //     'name': name,
+  //     'price': price,
+  //     'quantity': quantity,
+  //   };
+
+  //   if (position != null) {
+  //     map['position'] = position!;
+  //   }
+
+  //   return map;
+  // }
 
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(

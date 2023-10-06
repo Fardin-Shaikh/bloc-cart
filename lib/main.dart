@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.indigo,
+          primarySwatch: Colors.deepPurple,
         ),
         title: "Ecommerce App",
         initialRoute: '/',

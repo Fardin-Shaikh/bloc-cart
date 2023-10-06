@@ -25,10 +25,12 @@ class PrdBloc extends Bloc<PrdEvent, PrdState> {
       await inst.deleteProduct(event.product.id,  );
       final updaetPrd = await inst.getAllProducts( );
       emit(PrdState(updaetPrd));
+
     } else if (event is Fetch) {
       final fin = await inst.getAllProducts( );
       log('${fin.length}');
       emit(PrdState(fin));
+      
     } else if (event is UpdatePrd) {
       await inst.updateProduct(event.product,  );
       final fin = await inst.getAllProducts( );

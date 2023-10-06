@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:ecommerce_app_bloc/Models/product.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 abstract class MainDatabase {
   final String tabelName;
@@ -22,8 +25,11 @@ abstract class MainDatabase {
     final dbPath = await getExternalStorageDirectory();
     final path = join(dbPath!.path, filePath);
 
+    // final bool databaseExists = File(path).existsSync();
+    // final int databaseVersion = databaseExists ? 2 : 1;
+    // log(databaseVersion.toString());
     return await openDatabase(path,
-        version: 1, onCreate: _createDB, onUpgrade: _onUpgrade);
+        version: 2, onCreate: _createDB, onUpgrade: _onUpgrade);
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -32,7 +38,8 @@ abstract class MainDatabase {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         price REAL NOT NULL,
-        quantity INTEGER NOT NULL
+        quantity INTEGER NOT NULL,
+        position INTEGER NOT NULL
       )
     ''');
 
@@ -42,7 +49,7 @@ abstract class MainDatabase {
         name TEXT NOT NULL,
         price REAL NOT NULL,
         quantity INTEGER NOT NULL,
-     
+        position INTEGER NOT NULL
       )
     ''');
   }
@@ -53,7 +60,6 @@ abstract class MainDatabase {
       // Add the 'position' column to the 'products' table
       await db.execute(
           'ALTER TABLE products ADD COLUMN position INTEGER NOT NULL DEFAULT 0');
-      
     }
 
     // if (oldVersion < 3) {
@@ -134,6 +140,8 @@ abstract class MainDatabase {
     final db = await database;
     await db.rawUpdate('UPDATE products SET position = ? WHERE id = ?',
         [newPosition, productId]);
+    await db.rawUpdate(
+        'UPDATE cart SET position = ? WHERE id = ?', [newPosition, productId]);
   }
 
   Future<void> checkDatabaseVersion() async {
