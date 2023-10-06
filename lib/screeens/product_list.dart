@@ -270,7 +270,7 @@ class ProductListScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (_) => AddUpdateProduct(
-                                prd: product,
+                                prd: product, 
                               )));
                     },
                     leading: CircleAvatar(
