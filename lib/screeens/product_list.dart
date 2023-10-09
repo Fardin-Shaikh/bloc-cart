@@ -7,7 +7,8 @@ import 'package:ecommerce_app_bloc/bloc/add_to_cart_bloc/add_to_cart_state.dart'
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_bloc.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_event.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_state.dart';
-import 'package:ecommerce_app_bloc/db/db_code.dart';
+import 'package:ecommerce_app_bloc/db/database_repository.dart';
+
 import 'package:ecommerce_app_bloc/screeens/cart_list_screen.dart';
 import 'package:ecommerce_app_bloc/screeens/update_product_screen.dart';
 import 'package:flutter/material.dart';
@@ -195,26 +196,15 @@ class ProductListScreen extends StatelessWidget {
           builder: (context, state) {
             List<Product> lis = state.productItems
               ..sort((a, b) => a.position.compareTo(b.position));
-            // List<Product> lis = state.productItems
-            //   ..sort((a, b) {
-            //     if (a.position == null && b.position == null) {
-            //       return 0;
-            //     }
-            //     return a.position!.compareTo(b.position as num);
-            //   });
-            // ..sort((a, b) => a.position!.compareTo(b.position as num));
-            // List<Widget> test = state.productItems
-            //   ..map((e) {
-            //     return Container();
-            //   })
-            //   ..sort((a, b) => a.position.compareTo(b.position));
-            // products.sort((a, b) => a.name.compareTo(b.name));
+           
             if (lis.isEmpty) {
               return const Center(
                 child: Text(" No product ! Add new product "),
               );
             }
             return ReorderableListView.builder(
+
+
               onReorder: (oldIndex, newIndex) async {
                 // Update the position of the dragged product in the list
                 final productToMove = lis[oldIndex];
@@ -226,7 +216,7 @@ class ProductListScreen extends StatelessWidget {
                 // Update the positions of all products in the list
                 for (int i = 0; i < lis.length; i++) {
                   lis[i].position = i;
-                  await ProductDatabase().updateProductPosition(lis[i].id, i);
+                  await ProductDatabase().updateProductPosition(lis[i].id, i);//
                 }
 
                 // BlocProvider.of<PrdBloc>(context).add(Fetch());

@@ -5,7 +5,7 @@ import 'package:ecommerce_app_bloc/bloc/add_to_cart_bloc/add_to_cart_bloc.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_cart_bloc/add_to_cart_event.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_bloc.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_product_bloc/add_to_product_event.dart';
-import 'package:ecommerce_app_bloc/db/db_code.dart';
+import 'package:ecommerce_app_bloc/db/database_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -118,32 +118,12 @@ class _AddUpdateProductState extends State<AddUpdateProduct> {
                       } else {
                         //ADD PRODUCT CODE
 
-                        // final checklist = PrdBloc().state.productItems;
-                        // if (checklist
-                        //     .any((element) => element.id == product.id)) {
-                        //   ScaffoldMessenger.of(context)
-                        //       .showSnackBar(const SnackBar(
-                        //     content: Text(
-                        //         'Product already exists, try using another ID'),
-                        //     duration: Duration(seconds: 1),
-                        //   ));
-                        // } else {
-                        //   final productBloc = BlocProvider.of<PrdBloc>(context);
-
-                        //   productBloc.add(AddToPrd(product));
-                        //   ScaffoldMessenger.of(context)
-                        //       .showSnackBar(const SnackBar(
-                        //     content: Text('Product Added Successfully'),
-                        //     duration: Duration(seconds: 1),
-                        //   ));
-                        //   log("here fetch");
-                        //   Navigator.pop(context);
-                        // }
                         final existingProduct =
                             await ProductDatabase().getProductById(id);
                         // await ProductDatabase.instance.getProductById(id);
                         log(existingProduct.toString());
                         if (existingProduct != null) {
+                          // ignore: use_build_context_synchronously
                           ScaffoldMessenger.of(context)
                               .showSnackBar(const SnackBar(
                             content: Text(
@@ -152,7 +132,7 @@ class _AddUpdateProductState extends State<AddUpdateProduct> {
                           ));
                         } else {
                           final productBloc = BlocProvider.of<PrdBloc>(context);
-                          ProductDatabase().checkDatabaseVersion();
+                          // ProductDatabase().checkDatabaseVersion();
                           //  await ProductDatabase().updateProductPosition(product.id, 0);
                           productBloc.add(AddToPrd(product));
                           ScaffoldMessenger.of(context)

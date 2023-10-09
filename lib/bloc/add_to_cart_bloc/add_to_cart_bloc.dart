@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:ecommerce_app_bloc/bloc/add_to_cart_bloc/add_to_cart_event.dart';
 import 'package:ecommerce_app_bloc/bloc/add_to_cart_bloc/add_to_cart_state.dart';
-import 'package:ecommerce_app_bloc/db/db_code.dart';
+import 'package:ecommerce_app_bloc/db/database_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
